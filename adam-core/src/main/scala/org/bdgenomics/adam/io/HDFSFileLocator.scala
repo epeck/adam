@@ -23,4 +23,11 @@ package org.bdgenomics.adam.io
  */
 class HDFSFileLocator extends FileLocator {
 
+  override def parentLocator(): Option[FileLocator] = ???
+
+  override def relativeLocator(relativePath: String): FileLocator = ???
+
+  override def bytes: ByteAccess = ???
+
+  override def childLocators(): Iterable[FileLocator] = ???
 }
