@@ -18,16 +18,33 @@
 
 package org.bdgenomics.adam.io
 
+import org.apache.hadoop.conf.Configuration
+import org.apache.hadoop.fs.{LocatedFileStatus, RemoteIterator, Path}
+
 /**
  * A locator for files in HDFS.
  */
-class HDFSFileLocator extends FileLocator {
+class HDFSFileLocator(val conf: Configuration, val path: Path) extends FileLocator {
+  override def parentLocator(): Option[FileLocator] =
+    Some(new HDFSFileLocator(conf, path.getParent))
 
-  override def parentLocator(): Option[FileLocator] = ???
+  override def relativeLocator(relativePath: String): FileLocator =
+    new HDFSFileLocator(conf, new Path(path, relativePath))
 
-  override def relativeLocator(relativePath: String): FileLocator = ???
+  override def bytes: ByteAccess = {
+    val length = path.getFileSystem(conf).getFileStatus(path).getLen
+    val stream = () => path.getFileSystem(conf).open(path)
+    new InputStreamByteAccess(stream, length)
+  }
 
-  override def bytes: ByteAccess = ???
+  class HDFSIterable(val conf: Configuration, val remoteIterator: RemoteIterator[LocatedFileStatus]) extends Iterable[FileLocator] {
+    override def iterator: Iterator[FileLocator] = new Iterator[FileLocator] {
+      override def next(): FileLocator = new HDFSFileLocator(conf, remoteIterator.next().getPath)
 
-  override def childLocators(): Iterable[FileLocator] = ???
+      override def hasNext: Boolean = remoteIterator.hasNext
+    }
+  }
+
+  override def childLocators(): Iterable[FileLocator] =
+    new HDFSIterable(conf, path.getFileSystem(conf).listFiles(path, false))
 }
