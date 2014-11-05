@@ -38,4 +38,6 @@ class ClasspathFileLocator(classpath: String) extends FileLocator {
     case Some((parent, child)) => Some(new ClasspathFileLocator(parent))
     case None                  => None
   }
+
+  override def childLocators(): Iterable[FileLocator] = ???
 }
