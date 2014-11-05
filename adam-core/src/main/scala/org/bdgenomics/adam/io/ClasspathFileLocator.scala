@@ -15,11 +15,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.bdgenomics.services
+package org.bdgenomics.adam.io
 
 import java.io.File
-
-import org.bdgenomics.adam.io.{ ByteAccess, FileLocator, LocalFileByteAccess }
 
 class ClasspathFileLocator(classpath: String) extends FileLocator {
   override def relativeLocator(relativePath: String): FileLocator =
@@ -39,5 +37,9 @@ class ClasspathFileLocator(classpath: String) extends FileLocator {
     case None                  => None
   }
 
-  override def childLocators(): Iterable[FileLocator] = ???
+  override def childLocators(): Iterable[FileLocator] = {
+    Option(System.getenv("java.class.path")).getOrElse(".").split(":")
+      .filterNot(_.endsWith(".jar"))
+      .flatMap(path => new LocalFileLocator(new File(path)).relativeLocator(classpath).childLocators())
+  }
 }
