@@ -35,4 +35,6 @@ class LocalFileLocator(val file: File) extends FileLocator {
       case _                     => false
     }
   }
+
+  override def childLocators(): Iterable[FileLocator] = ???
 }

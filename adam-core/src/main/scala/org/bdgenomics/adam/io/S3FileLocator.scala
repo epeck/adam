@@ -31,4 +31,6 @@ class S3FileLocator(val credentials: AWSCredentials, val bucket: String, val key
     new S3FileLocator(credentials, bucket, "%s/%s".format(key.stripSuffix("/"), relativePath))
 
   override def bytes: ByteAccess = new S3ByteAccess(new AmazonS3Client(credentials), bucket, key)
+
+  override def childLocators(): Iterable[FileLocator] = ???
 }

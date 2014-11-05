@@ -36,6 +36,7 @@ package org.bdgenomics.adam.io
 trait FileLocator extends Serializable {
 
   def parentLocator(): Option[FileLocator]
+  def childLocators() : Iterable[FileLocator]
   def relativeLocator(relativePath: String): FileLocator
   def bytes: ByteAccess
 }

@@ -25,4 +25,6 @@ class HTTPFileLocator(uri: URI, retries: Int = 3) extends FileLocator {
   override def relativeLocator(relativePath: String): FileLocator = ???
 
   override def bytes: ByteAccess = new HTTPRangedByteAccess(uri, retries)
+
+  override def childLocators(): Iterable[FileLocator] = ???
 }

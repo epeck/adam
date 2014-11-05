@@ -21,6 +21,6 @@ package org.bdgenomics.adam.io
 /**
  * A locator for files in HDFS.
  */
-class HDFSFileLocator {
+class HDFSFileLocator extends FileLocator {
 
 }
