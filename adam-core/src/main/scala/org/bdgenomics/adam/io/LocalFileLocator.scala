@@ -17,7 +17,7 @@
  */
 package org.bdgenomics.adam.io
 
-import java.io.File
+import java.io.{FileFilter, File}
 
 class LocalFileLocator(val file: File) extends FileLocator {
   override def relativeLocator(relativePath: String): FileLocator = new LocalFileLocator(new File(file, relativePath))
@@ -36,5 +36,12 @@ class LocalFileLocator(val file: File) extends FileLocator {
     }
   }
 
-  override def childLocators(): Iterable[FileLocator] = ???
+  override def childLocators(): Iterable[FileLocator] = {
+    val filter = new FileFilter {
+      override def accept(p1: File): Boolean = p1.isFile
+    }
+    file.listFiles(filter).map { f =>
+      new LocalFileLocator( f )
+    }
+  }
 }
